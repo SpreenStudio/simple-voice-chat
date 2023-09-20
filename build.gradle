@@ -2,37 +2,6 @@ plugins {
     id 'fabric-loom' version "${fabric_loom_version}" apply false
 }
 
-tasks.register('publish01Bukkit', GradleBuild) {
-    group = 'voicechat'
-    tasks = [
-            ':bukkit:clean',
-            ':bukkit:curseforge',
-            ':bukkit:modrinth',
-            ':bukkit:publishAllPublicationsToHangar'
-    ]
-}
-
-tasks.register('publish02Quilt', GradleBuild) {
-    group = 'voicechat'
-    dir = 'quilt'
-    tasks = [
-            'clean',
-            'curseforge',
-            'modrinth',
-            'modUpdate'
-    ]
-}
-
-tasks.register('publish03Forge', GradleBuild) {
-    group = 'voicechat'
-    tasks = [
-            ':common:clean',
-            ':forge:clean',
-            ':forge:curseforge',
-            ':forge:modrinth',
-            ':forge:modUpdate'
-    ]
-}
 
 tasks.register('publish04Fabric', GradleBuild) {
     group = 'voicechat'
@@ -71,33 +40,10 @@ tasks.register('publish07APILocal', GradleBuild) {
     ]
 }
 
-tasks.register('runClientQuilt', GradleBuild) {
-    group = 'voicechat'
-    dir = 'quilt'
-    tasks = [
-            'runClient'
-    ]
-}
-
 tasks.register('runClientFabric', GradleBuild) {
     group = 'voicechat'
     tasks = [
             ':fabric:runClient'
-    ]
-}
-
-tasks.register('runClientForge', GradleBuild) {
-    group = 'voicechat'
-    tasks = [
-            ':forge:runClient'
-    ]
-}
-
-tasks.register('runServerQuilt', GradleBuild) {
-    group = 'voicechat'
-    dir = 'quilt'
-    tasks = [
-            'runServer'
     ]
 }
 
@@ -108,29 +54,11 @@ tasks.register('runServerFabric', GradleBuild) {
     ]
 }
 
-tasks.register('runServerForge', GradleBuild) {
-    group = 'voicechat'
-    tasks = [
-            ':forge:runServer'
-    ]
-}
-
 tasks.register('cleanAll', GradleBuild) {
     group = 'voicechat'
     tasks = [
             ':common:clean',
             ':api:clean',
-            'cleanQuilt',
-            ':fabric:clean',
-            ':forge:clean',
-            ':bukkit:clean'
-    ]
-}
-
-tasks.register('cleanQuilt', GradleBuild) {
-    group = 'voicechat'
-    dir = 'quilt'
-    tasks = [
-            'clean'
+            ':fabric:clean'
     ]
 }

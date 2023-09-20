@@ -96,6 +96,11 @@ public class FabricCommonCompatibilityManager extends CommonCompatibilityManager
     }
 
     @Override
+    public void updateSecrets(Consumer<ServerPlayer> onUpdateSecrets) {
+        PlayerEvents.UPDATE_SECRETS.register(onUpdateSecrets);
+    }
+
+    @Override
     public void onPlayerCompatibilityCheckSucceeded(Consumer<ServerPlayer> onPlayerCompatibilityCheckSucceeded) {
         ServerVoiceChatEvents.VOICECHAT_COMPATIBILITY_CHECK_SUCCEEDED.register(onPlayerCompatibilityCheckSucceeded);
     }

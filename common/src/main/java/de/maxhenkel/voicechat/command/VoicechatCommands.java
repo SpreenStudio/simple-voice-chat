@@ -1,6 +1,7 @@
 package de.maxhenkel.voicechat.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,11 +11,9 @@ import de.maxhenkel.voicechat.Voicechat;
 import de.maxhenkel.voicechat.intercompatibility.CommonCompatibilityManager;
 import de.maxhenkel.voicechat.permission.Permission;
 import de.maxhenkel.voicechat.permission.PermissionManager;
+import de.maxhenkel.voicechat.voice.client.ClientManager;
 import de.maxhenkel.voicechat.voice.common.PlayerState;
-import de.maxhenkel.voicechat.voice.server.ClientConnection;
-import de.maxhenkel.voicechat.voice.server.Group;
-import de.maxhenkel.voicechat.voice.server.PingManager;
-import de.maxhenkel.voicechat.voice.server.Server;
+import de.maxhenkel.voicechat.voice.server.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -195,6 +194,67 @@ public class VoicechatCommands {
             commandSource.getSource().sendSuccess(() -> Component.translatable("message.voicechat.leave_successful"), false);
             return 1;
         }));
+
+        literalBuilder.then(Commands.literal("maxVoiceDistance")
+                .then(Commands.argument("distance", DoubleArgumentType.doubleArg())
+                        .executes(
+                                context -> {
+                                    var distance = DoubleArgumentType.getDouble(context, "distance");
+                                    Voicechat.SERVER_CONFIG.voiceChatDistance.set(distance);
+                                    context.getSource().sendSuccess(() -> Component.literal("Distance of voice chat changed to " + distance), false);
+                                    return 1;
+                                }
+                        )
+                )
+        );
+
+        literalBuilder.then(Commands.literal("crouchDistanceMultiplier")
+                .then(Commands.argument("distance", DoubleArgumentType.doubleArg())
+                        .executes(
+                                context -> {
+                                    var distance = DoubleArgumentType.getDouble(context, "distance");
+                                    Voicechat.SERVER_CONFIG.crouchDistanceMultiplier.set(distance);
+                                    context.getSource().sendSuccess(() -> Component.literal("Crouch multiplier changed to " + distance), false);
+                                    return 1;
+                                }
+                        )
+                )
+        );
+
+        literalBuilder.then(Commands.literal("whisperDistanceMultiplier")
+                .then(Commands.argument("distance", DoubleArgumentType.doubleArg())
+                        .executes(
+                                context -> {
+                                    var distance = DoubleArgumentType.getDouble(context, "distance");
+                                    Voicechat.SERVER_CONFIG.whisperDistanceMultiplier.set(distance);
+                                    context.getSource().sendSuccess(() -> Component.literal("Whisper distance multiplier changed to " + distance), false);
+                                    return 1;
+                                }
+                        )
+                )
+        );
+
+        literalBuilder.then(Commands.literal("toggleSpectatorInteraction")
+                .executes(
+                        context -> {
+                            var enabled = !Voicechat.SERVER_CONFIG.spectatorInteraction.get();
+                            Voicechat.SERVER_CONFIG.spectatorInteraction.set(enabled);
+                            context.getSource().sendSuccess(() -> Component.literal("Spectator interaction is now " + (enabled ? "enabled" : "disabled")), false);
+                            return 1;
+                        }
+                )
+        );
+
+        literalBuilder.then(Commands.literal("toggleSpectatorPlayerPossession")
+                .executes(
+                        context -> {
+                            var enabled = !Voicechat.SERVER_CONFIG.spectatorPlayerPossession.get();
+                            Voicechat.SERVER_CONFIG.spectatorPlayerPossession.set(enabled);
+                            context.getSource().sendSuccess(() -> Component.literal("Spectator player possession is now " + (enabled ? "enabled" : "disabled")), false);
+                            return 1;
+                        }
+                )
+        );
 
         dispatcher.register(literalBuilder);
     }

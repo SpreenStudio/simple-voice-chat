@@ -91,6 +91,10 @@ public class ClientManager {
         }
     }
 
+    public void updateInfo(){
+        CommonCompatibilityManager.INSTANCE.getNetManager().secretChannel.setClientListener((client, handler, packet) -> authenticate(packet));
+    }
+
     private void onJoinWorld() {
         if (VoicechatClient.CLIENT_CONFIG.muteOnJoin.get()) {
             VoicechatClient.CLIENT_CONFIG.muted.set(true);

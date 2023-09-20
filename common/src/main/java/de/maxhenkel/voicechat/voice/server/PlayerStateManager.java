@@ -2,6 +2,7 @@ package de.maxhenkel.voicechat.voice.server;
 
 import de.maxhenkel.voicechat.Voicechat;
 import de.maxhenkel.voicechat.intercompatibility.CommonCompatibilityManager;
+import de.maxhenkel.voicechat.net.ChangeStatusPacket;
 import de.maxhenkel.voicechat.net.NetManager;
 import de.maxhenkel.voicechat.net.PlayerStatePacket;
 import de.maxhenkel.voicechat.net.PlayerStatesPacket;
@@ -24,6 +25,7 @@ public class PlayerStateManager {
         this.states = new ConcurrentHashMap<>();
         CommonCompatibilityManager.INSTANCE.onPlayerLoggedIn(this::onPlayerLoggedIn);
         CommonCompatibilityManager.INSTANCE.onPlayerLoggedOut(this::onPlayerLoggedOut);
+        CommonCompatibilityManager.INSTANCE.updateSecrets(this::updateSecrets);
         CommonCompatibilityManager.INSTANCE.onServerVoiceChatConnected(this::onPlayerVoicechatConnect);
         CommonCompatibilityManager.INSTANCE.onServerVoiceChatDisconnected(this::onPlayerVoicechatDisconnect);
         CommonCompatibilityManager.INSTANCE.onPlayerCompatibilityCheckSucceeded(this::onPlayerCompatibilityCheckSucceeded);
@@ -54,6 +56,10 @@ public class PlayerStateManager {
         PlayerStatesPacket packet = new PlayerStatesPacket(states);
         NetManager.sendToClient(player, packet);
         Voicechat.LOGGER.debug("Sending initial states to {}", player.getDisplayName().getString());
+    }
+
+    public void updateSecrets(ServerPlayer player) {
+        NetManager.sendToClient(player, new ChangeStatusPacket(new SettingStatus(Voicechat.SERVER_CONFIG.groupsEnabled.get() ? 1 : 2, Voicechat.SERVER_CONFIG.allowRecording.get() ? 1 : 2)));
     }
 
     private void onPlayerLoggedIn(ServerPlayer player) {

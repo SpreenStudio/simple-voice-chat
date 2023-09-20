@@ -1,2 +1,0 @@
-- Added join group by name command
-- Fixed compatibility with Forward-Forge-Client-Reset-Packet

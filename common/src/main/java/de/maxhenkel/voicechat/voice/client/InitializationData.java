@@ -17,8 +17,8 @@ public class InitializationData {
     private final int mtuSize;
     private final double voiceChatDistance;
     private final int keepAlive;
-    private final boolean groupsEnabled;
-    private final boolean allowRecording;
+    private boolean groupsEnabled;
+    private boolean allowRecording;
 
     public InitializationData(String serverIP, SecretPacket secretPacket) {
         HostData hostData = parseAddress(secretPacket.getVoiceHost(), serverIP, secretPacket.getServerPort());
@@ -32,6 +32,14 @@ public class InitializationData {
         this.keepAlive = secretPacket.getKeepAlive();
         this.groupsEnabled = secretPacket.groupsEnabled();
         this.allowRecording = secretPacket.allowRecording();
+    }
+
+    public void setGroupsEnabled(boolean groupsEnabled) {
+        this.groupsEnabled = groupsEnabled;
+    }
+
+    public void setAllowRecording(boolean allowRecording) {
+        this.allowRecording = allowRecording;
     }
 
     private static HostData parseAddress(String voiceHost, String serverIP, int serverPort) {

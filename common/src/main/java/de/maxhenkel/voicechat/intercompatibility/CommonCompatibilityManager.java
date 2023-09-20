@@ -42,6 +42,8 @@ public abstract class CommonCompatibilityManager {
 
     public abstract void onPlayerLoggedOut(Consumer<ServerPlayer> onPlayerLoggedOut);
 
+    public abstract void updateSecrets(Consumer<ServerPlayer> onUpdateSecrets);
+
     public abstract void onPlayerCompatibilityCheckSucceeded(Consumer<ServerPlayer> onPlayerCompatibilityCheckSucceeded);
 
     public abstract void onRegisterServerCommands(Consumer<CommandDispatcher<CommandSourceStack>> onRegisterServerCommands);

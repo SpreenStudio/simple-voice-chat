@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public abstract class Voicechat {
+    private static Voicechat instance;
 
     public static final String MODID = "voicechat";
     public static final VoicechatLogger LOGGER = new Log4JVoicechatLogger(MODID);
@@ -26,6 +27,7 @@ public abstract class Voicechat {
     public static final Pattern GROUP_REGEX = Pattern.compile("^[^\\n\\r\\t\\s][^\\n\\r\\t]{0,23}$");
 
     public void initialize() {
+        instance = this;
         if (debugMode()) {
             LOGGER.warn("Running in debug mode - Don't leave this enabled in production!");
         }
@@ -55,6 +57,10 @@ public abstract class Voicechat {
 
     public static Path getConfigFolder() {
         return Path.of(".").resolve("config");
+    }
+
+    public static Voicechat getInstance() {
+        return instance;
     }
 
 }
