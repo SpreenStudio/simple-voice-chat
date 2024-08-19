@@ -16,6 +16,7 @@ import de.maxhenkel.voicechat.voice.server.Group;
 import de.maxhenkel.voicechat.voice.server.PingManager;
 import de.maxhenkel.voicechat.voice.server.Server;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -95,6 +96,14 @@ public class VoicechatCommands {
             }
             return 1;
         })));
+
+        literalBuilder.then(Commands.literal("modify").requires((context) -> checkPermission(context, PermissionManager.INSTANCE.ADMIN_PERMISSION))
+                .then(Commands.argument("type", StringArgumentType.string())
+                        .then(Commands.argument("value", StringArgumentType.string())
+                                .executes(context -> modify(context))
+                        )
+                )
+        );
 
         literalBuilder.then(Commands.literal("invite").then(Commands.argument("target", EntityArgument.player()).executes((commandSource) -> {
             if (checkNoVoicechat(commandSource)) {
@@ -197,6 +206,76 @@ public class VoicechatCommands {
         }));
 
         dispatcher.register(literalBuilder);
+    }
+
+    private static int modify(CommandContext<CommandSourceStack> context) {
+        if (checkNoVoicechat(context)) {
+            sendMSG(context, "Voicechat is not available");
+            return 0;
+        }
+        String type = StringArgumentType.getString(context, "type");
+        String value = StringArgumentType.getString(context, "value");
+
+        List<String> allowed = List.of("allow_recording", "spectator_interaction", "spectator_player_possession", "force_voice_chat", "login_timeout", "broadcast_range", "allow_pings", "max_voice_distance", "crouch_distance_multiplier", "whisper_distance_multiplier", "enable_groups");
+        if (!allowed.contains(type)) {
+            sendMSG(context, "Invalid type");
+            return 0;
+        }
+        try {
+            switch (allowed.indexOf(type)) {
+                case 0:
+                    Voicechat.SERVER_CONFIG.allowRecording.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set allow_recording to " + value);
+                    break;
+                case 1:
+                    Voicechat.SERVER_CONFIG.spectatorInteraction.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set spectator_interaction to " + value);
+                    break;
+                case 2:
+                    Voicechat.SERVER_CONFIG.spectatorPlayerPossession.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set spectator_player_possession to " + value);
+                    break;
+                case 3:
+                    Voicechat.SERVER_CONFIG.forceVoiceChat.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set force_voice_chat to " + value);
+                    break;
+                case 4:
+                    Voicechat.SERVER_CONFIG.loginTimeout.set(Integer.parseInt(value));
+                    sendMSG(context, "Set login_timeout to " + value);
+                    break;
+                case 5:
+                    Voicechat.SERVER_CONFIG.broadcastRange.set(Double.parseDouble(value));
+                    sendMSG(context, "Set broadcast_range to " + value);
+                    break;
+                case 6:
+                    Voicechat.SERVER_CONFIG.allowPings.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set allow_pings to " + value);
+                    break;
+                case 7:
+                    Voicechat.SERVER_CONFIG.voiceChatDistance.set(Double.parseDouble(value));
+                    sendMSG(context, "Set max_voice_distance to " + value);
+                    break;
+                case 8:
+                    Voicechat.SERVER_CONFIG.crouchDistanceMultiplier.set(Double.parseDouble(value));
+                    sendMSG(context, "Set crouch_distance_multiplier to " + value);
+                    break;
+                case 9:
+                    Voicechat.SERVER_CONFIG.whisperDistanceMultiplier.set(Double.parseDouble(value));
+                    sendMSG(context, "Set whisper_distance_multiplier to " + value);
+                    break;
+                case 10:
+                    Voicechat.SERVER_CONFIG.groupsEnabled.set(Boolean.parseBoolean(value));
+                    sendMSG(context, "Set enable_groups to " + value);
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            sendMSG(context, "Invalid value");
+        }
+        return 1;
+    }
+
+    public static void sendMSG(CommandContext<CommandSourceStack> source, String message) {
+        source.getSource().sendSuccess(() -> Component.literal(message), false);
     }
 
     private static Server joinGroup(CommandSourceStack source) throws CommandSyntaxException {
